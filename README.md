@@ -16,6 +16,10 @@ You’ll need Python 3 and a web browser with JavaScript enabled. The site uses 
 2. Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) in your browser.
 3. Press **Ctrl+C** in Terminal when you want to stop the server.
 
+## Deploy on Vercel
+
+Import the Git repository into Vercel and keep the **Root Directory** at the repository root. [`vercel.json`](vercel.json) selects the **Other** framework preset, skips the build, and serves `dist/` at the deployment URL. Deploy the commit containing this file. Once the deployment is ready, open the project domain to load the overview.
+
 ## Pages
 
 | Page | What to do there |
