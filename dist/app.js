@@ -1,6 +1,7 @@
 const nav = [
   ["index","Overview","⌂"], ["roadmap","Roadmap","≋"], ["projects","Projects","◇"],
-  ["applications","Applications","↗"], ["interview","Interview prep","◫"]
+  ["applications","Applications","↗"], ["interview","Interview prep","◫"],
+  ["system-design","System design","▦"]
 ];
 const page = location.pathname.split("/").pop().replace(".html", "") || "index";
 const activePage = nav.find(([id]) => id === page) || nav[0];
@@ -153,6 +154,10 @@ function applications() {
 
 function interview() {
   return head("Practice", "Interview preparation", "Rehearse the work you’ll do on a small team. Time each exercise, then compare your answer with the scoring notes.") + `
+  <aside class="design-callout">
+    <div><h2>Prepare for the design round</h2><p>Study 26 concepts and walk through a multi-tenant support copilot.</p></div>
+    <a class="button dark" href="system-design.html">Open system design guide <span aria-hidden="true">↗</span></a>
+  </aside>
   <div class="week-grid drill-grid">${drills.map(([topic,time,prompt,hint]) => `<article class="card">
     <div class="section-head"><h3>${topic}</h3>${badge(time)}</div><p>${prompt}</p><details><summary>What a strong answer covers</summary><p>${hint}</p></details></article>`).join("")}</div>
   <section class="section overview-grid"><div class="card"><h2>90-second project walkthrough</h2><ol class="routine">
@@ -161,7 +166,59 @@ function interview() {
   <div class="card"><h2>Questions for the team</h2><ul class="routine"><li>Which AI workflow is already in production, and who uses it?</li><li>How do you evaluate model changes before release?</li><li>What would I own in my first 30 days?</li><li>What trade-off is most pressing today: quality, latency, cost, or adoption?</li></ul></div></section>`;
 }
 
-const views = {index: overview, roadmap, projects: projectPage, applications, interview};
+function systemDesign() {
+  let number = 0;
+  return head("Interview prep", "AI system design", "Study how production AI systems handle traffic, retrieval, failures, and cost. Then practice explaining your choices in a 45-minute design round.") + `
+  <div class="design-callout">
+    <div><h2>Design a support copilot</h2><p>Work through a complete example with requirements, traffic estimates, and failure handling.</p></div>
+    <a class="button dark" href="#worked-example">Start the mock interview <span aria-hidden="true">↓</span></a>
+  </div>
+  <section class="section" aria-labelledby="concepts">
+    <div class="section-head"><h2 id="concepts">The 26 concepts</h2></div>
+    <nav class="pills" aria-label="Concept groups">${designGroups.map(({name}, index) => `<a href="#design-group-${index + 1}">${name}</a>`).join("")}</nav>
+    <label class="field design-search"><span>Find a concept</span><input type="search" id="design-search" placeholder="Try retries, tenant isolation, or HNSW" aria-controls="design-concepts"></label>
+    <p id="design-count" class="design-count" role="status"></p>
+    <div id="design-concepts">
+    ${designGroups.map(({name, summary, topics}, index) => `<section class="design-group" id="design-group-${index + 1}">
+      <div class="design-group-head"><h3>${name}</h3><p>${summary}</p></div>
+      <div class="design-list">${topics.map(({title, flow, theory, example, answer}) => `
+        <details class="design-topic" id="design-topic-${++number}" ${number === 1 ? "open" : ""}>
+          <summary><span class="stage-number" aria-hidden="true">${String(number).padStart(2, "0")}</span><span>${title}</span><span class="design-chevron" aria-hidden="true"></span></summary>
+          <div class="design-body"><p class="design-flow">${flow}</p>
+            <dl><div><dt>Theory</dt><dd>${theory}</dd></div><div><dt>Real-world example</dt><dd>${example}</dd></div><div><dt>How to answer in an interview</dt><dd>${answer}</dd></div></dl>
+          </div>
+        </details>`).join("")}</div>
+    </section>`).join("")}</div>
+  </section>
+  <section class="section project-card featured" id="worked-example">
+    <p class="eyebrow">45-minute mock interview</p><h2>Design a multi-tenant support copilot</h2>
+    <p>A B2B SaaS startup wants support reps to ask policy questions and get cited answers. Each company uploads its own documents. The service should show progress during uploads and abstain when there’s insufficient evidence.</p>
+    <div class="design-timeline">
+      <article><h3>0–7 minutes · Clarify the requirements</h3><p>Ask who can upload and read documents, how soon updates must appear, and what to do when the model is unavailable. For practice, assume 100 tenants, 50,000 documents, 20 questions per second at peak, and a target p95 time to first token below two seconds for successful answers.</p></article>
+      <article><h3>7–12 minutes · Estimate capacity</h3><p>At 3,000 input tokens and 300 output tokens per request, 20 requests per second implies about 3.6 million input and 360,000 output tokens per minute if the peak is sustained. At a four-second mean request duration, expect roughly 80 concurrent requests in steady state. Check provider quotas and leave room for spikes and retries.</p></article>
+      <article><h3>12–25 minutes · Draw both paths</h3><p class="design-flow">Upload → object storage → queue → extract, chunk, embed → versioned index</p><p class="design-flow">Question → identity and quota → tenant-scoped retrieval → model → cited stream</p><p>Use a relational store for document ownership and job state. Start with lexical and vector retrieval on a small labeled set. Fetch passages from a published corpus version. Return source IDs the server can resolve and verify for the tenant.</p></article>
+      <article><h3>25–37 minutes · Walk through failures</h3><p>Use an idempotent document-version job so duplicate delivery is safe. Limit queue age and worker concurrency when embeddings are throttled. During a model outage, use an approved fallback within the deadline or return relevant passages with a clear status. Enforce tenant scope before retrieval and again when resolving citations.</p></article>
+      <article><h3>37–45 minutes · Measure and release</h3><p>Measure recall@k, citation correctness, and abstention on representative questions. Track p95 first-token latency, completion rate, oldest-job age, and cost per answer. Shadow a retrieval change on eligible traffic, compare both versions, then canary with a rollback to the previous version.</p></article>
+    </div>
+    <div class="design-followups"><h3>Practice the follow-up questions</h3>
+      <details><summary>What changes when a tenant deletes a document?</summary><p>Mark it unavailable in the source of truth immediately, enforce that status during retrieval and citation resolution, then remove its chunks and invalidate affected caches. Measure how long physical cleanup takes.</p></details>
+      <details><summary>How do you debug a plausible answer with a wrong citation?</summary><p>Use the trace to check corpus version, retrieved candidates, ranking, and citation IDs. Determine whether the right passage was missing or the model cited the wrong one. Add the request to the regression set with an expected source.</p></details>
+      <details><summary>What would you build first with two engineers?</summary><p>Start with one API, one database, a background ingestion worker, and a single provider. Validate search and citations with target users. Add replicas, a shared gateway, or sharding when measurements show a specific constraint.</p></details>
+    </div>
+  </section>
+  <section class="section card design-resources"><h2>Technical references</h2>
+    <div class="resources">
+      ${link("https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/", "AWS · Retry behavior")}
+      ${link("https://github.com/pgvector/pgvector", "pgvector · HNSW and filtering")}
+      ${link("https://www.postgresql.org/docs/current/ddl-rowsecurity.html", "PostgreSQL · Row security")}
+      ${link("https://opentelemetry.io/docs/concepts/signals/traces/", "OpenTelemetry · Traces")}
+      ${link("https://docs.temporal.io/workflows", "Temporal · Workflows")}
+    </div>
+    <p class="source-note">Concept list adapted from Mohit Sood’s <cite>26 System Design Concepts Every AI Engineer Should Know</cite>. The scenarios, estimates, and mock interview are illustrative.</p>
+  </section>`;
+}
+
+const views = {index: overview, roadmap, projects: projectPage, applications, interview, "system-design": systemDesign};
 document.title = `${pageName} | Startup AI Engineer Field Guide`;
 app.innerHTML = `
   <aside class="sidebar"><a class="brand" href="index.html"><span class="brand-icon" aria-hidden="true">✦</span><span>Startup AI Engineer<small>Field Guide</small></span></a>
@@ -171,6 +228,28 @@ app.innerHTML = `
   <main id="main" tabindex="-1">${views[pageId]()}</main>
   <footer><span>Startup AI Engineer Field Guide</span><a href="roadmap.html">Roadmap by Mohit Sood ↗</a></footer></div>
   <div class="feedback" id="feedback" role="status" aria-live="polite"></div>`;
+
+const designSearch = document.querySelector("#design-search");
+if (designSearch) {
+  const groups = document.querySelectorAll(".design-group");
+  const count = document.querySelector("#design-count");
+  designSearch.addEventListener("input", () => {
+    const words = designSearch.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let matches = 0;
+    groups.forEach(group => {
+      let groupMatches = 0;
+      group.querySelectorAll(".design-topic").forEach(topic => {
+        const text = topic.textContent.toLowerCase();
+        const found = words.every(word => text.includes(word));
+        topic.hidden = !found;
+        groupMatches += Number(found);
+      });
+      group.hidden = groupMatches === 0;
+      matches += groupMatches;
+    });
+    count.textContent = words.length ? `${matches} of 26 concepts match your search.` : "";
+  });
+}
 
 function refreshProgress() {
   document.querySelectorAll("[data-count]").forEach(node => {

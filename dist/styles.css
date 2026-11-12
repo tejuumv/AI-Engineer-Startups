@@ -138,6 +138,34 @@ details {margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
 summary {font-weight:700;color:#355d3f}
 footer {display:flex;justify-content:space-between;gap:14px;padding-block:15px 24px;border-top:1px solid var(--line);color:var(--muted);font-size:.78rem}
 .feedback:not(:empty) {position:fixed;right:18px;bottom:18px;z-index:5;background:var(--forest);color:white;border-radius:8px;padding:9px 13px;box-shadow:0 2px 18px #0003;max-width:calc(100% - 36px)}
+.design-callout {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px;padding:clamp(16px,3vw,24px);border:1px solid #d8e6cf;border-radius:12px;background:var(--leaf)}
+.design-callout h2 {font-size:clamp(1.9rem,4vw,2.55rem)}
+.design-callout p,.design-group-head p,.design-count {color:var(--muted);margin-top:5px}
+.design-search {max-width:460px;margin-top:18px}
+.design-count {font-size:.85rem}
+.design-count:empty {display:none}
+.design-group {margin-top:24px;scroll-margin-top:24px}
+.design-group-head {margin-bottom:9px}
+.design-group-head h3 {font-size:1.3rem}
+.design-list {display:grid;gap:8px}
+.design-topic {margin:0;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--white)}
+.design-topic>summary {display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 14px;list-style:none;border-radius:9px}
+.design-topic>summary::-webkit-details-marker {display:none}
+.design-topic>summary:hover {background:#f3f8ef}
+.design-chevron {width:8px;height:8px;margin:0 5px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.design-topic[open] .design-chevron {transform:translateY(2px) rotate(225deg)}
+.design-body {padding:2px 16px 16px}
+.design-body dl {display:grid;gap:12px;margin:13px 0 0}
+.design-body dt {font-weight:700}
+.design-body dd {margin:2px 0 0;max-width:80ch;color:var(--muted)}
+.design-flow {padding:9px 12px;border-radius:7px;background:#eaf2e3;color:#31583b;font-size:.87rem;font-weight:600}
+.design-timeline {display:grid;gap:10px;margin-top:17px}
+.design-timeline article {border:1px solid var(--line);border-radius:9px;background:var(--white);padding:14px}
+.design-timeline article p {margin-top:7px;color:var(--muted)}
+.design-timeline article .design-flow {color:#31583b}
+.design-followups {margin-top:20px}
+.design-followups details p {color:var(--muted);margin-top:6px}
+.design-resources .source-note {margin-top:14px}
 @media(max-width:1120px) {
   .sidebar {width:190px;padding-inline:12px}
   .shell {margin-left:190px}

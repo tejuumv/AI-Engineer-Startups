@@ -1,6 +1,6 @@
 # Startup AI Engineer Field Guide
 
-A five-page website for learning applied AI engineering, shipping a portfolio project, and applying to startups. It adapts Mohit Sood’s 19-step AI Engineer Roadmap and adds an eight-week plan, project briefs, interview exercises, and an application tracker.
+A website for learning applied AI engineering, shipping a portfolio project, and applying to startups. It adapts Mohit Sood’s 19-step AI Engineer Roadmap and adds an eight-week plan, project briefs, interview exercises, a system design guide, and an application tracker.
 
 ## Run locally
 
@@ -29,6 +29,7 @@ Import the Git repository into Vercel and keep the **Root Directory** at the rep
 | [Projects](dist/projects.html) | Choose a project and use the portfolio checklist to gather your demo, evaluation results, and user feedback. |
 | [Applications](dist/applications.html) | Find startup roles, tailor the outreach template, and track application statuses and follow-up dates. |
 | [Interview prep](dist/interview.html) | Practice six timed drills and rehearse a 90-second project walkthrough. |
+| [System design](dist/system-design.html) | Study 26 concepts through theory and practical examples, then practice a 45-minute support copilot design round. |
 
 If you already know Python, start by attempting the foundations exercises. Then pick a project and build one working workflow you can demo. Use its measured results and user feedback in your applications.
 
@@ -39,6 +40,7 @@ Roadmap checkmarks, portfolio checkmarks, and application entries are stored in 
 ## Edit the site
 
 - [`dist/data.js`](dist/data.js) contains the roadmap, weekly plan, project briefs, and interview drills.
+- [`dist/system-design-data.js`](dist/system-design-data.js) contains the system design concepts, examples, and sample interview answers.
 - [`dist/app.js`](dist/app.js) renders the pages and handles interactions and storage.
 - [`dist/styles.css`](dist/styles.css) controls the layout and appearance.
 
